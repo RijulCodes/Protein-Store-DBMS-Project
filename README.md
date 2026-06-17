@@ -55,6 +55,6 @@ A database-driven protein store management system built as a final project for m
 
 ## Authors
 
-* Divit Khandelwal
-* Nitya Mehrotra
 * Rijul Yadav
+* Nitya Mehrotra
+* Divit Khandelwal
