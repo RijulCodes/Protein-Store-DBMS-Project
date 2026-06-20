@@ -27,6 +27,7 @@ export default function Navbar({ cartCount = 0 }) {
 
         <div className="nav-links">
           <Link to="/" className="nav-link">Products</Link>
+          <Link to="/ai-advisor" className="nav-link" style={{ display: 'inline-flex', alignItems: 'center', gap: '4px' }}>🧠 AI Coach</Link>
 
           {user ? (
             <>

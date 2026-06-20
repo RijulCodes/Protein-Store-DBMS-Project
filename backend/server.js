@@ -6,6 +6,9 @@ require('dotenv').config();
 
 const app = express();
 
+// Trust proxy for rate limiting validation
+app.set('trust proxy', 1);
+
 // ── Middleware ────────────────────────────────────────────────
 app.use(cors());
 app.use(express.json());
@@ -16,6 +19,7 @@ app.use('/api/products', require('./routes/productRoutes'));
 app.use('/api/cart',     require('./routes/cartRoutes'));
 app.use('/api/orders',   require('./routes/orderRoutes'));
 app.use('/api/reports',  require('./routes/reportsRoutes')); // triggers/views/stored proc
+app.use('/api/ai',       require('./routes/aiRoutes')); // Phase 2a AI features
 
 // ── Health check ──────────────────────────────────────────────
 app.get('/', (req, res) => res.json({ message: 'Protein Store API running ✓' }));

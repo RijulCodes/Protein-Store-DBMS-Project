@@ -360,3 +360,16 @@ INSERT INTO Products (name, category, description, price, stock, in_stock, low_s
 ('MuscleTech Phase8', 'Whey Protein',
  '8-hour sustained release protein blend. 26g protein per serving. Vanilla flavor.',
  4599.00, 20, 1, 0, 'https://cdn11.bigcommerce.com/s-ilgxsy4t82/images/stencil/original/products/66063/149496/71cK2ijWj0L._AC_SL1500___81448.1661507562.jpg?c=1');
+
+-- ============================================================
+-- SECURITY SETTINGS: READ-ONLY REPORTING USER (Phase 2c)
+-- Run the following commands as MySQL root/admin:
+-- ============================================================
+-- CREATE USER 'reporter_user'@'localhost' IDENTIFIED BY '<use-a-strong-custom-password-here>';
+-- GRANT SELECT ON protein_store.Products TO 'reporter_user'@'localhost';
+-- GRANT SELECT ON protein_store.Orders TO 'reporter_user'@'localhost';
+-- GRANT SELECT ON protein_store.Order_Items TO 'reporter_user'@'localhost';
+-- GRANT SELECT ON protein_store.Payments TO 'reporter_user'@'localhost';
+-- GRANT SELECT ON protein_store.vw_product_stock_status TO 'reporter_user'@'localhost';
+-- GRANT SELECT ON protein_store.vw_order_summary TO 'reporter_user'@'localhost';
+-- FLUSH PRIVILEGES;

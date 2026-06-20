@@ -5,6 +5,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import API from '../api';
 import { useAuth } from '../context/AuthContext';
+import ProductCard from '../components/ProductCard';
 
 const FALLBACK = 'https://placehold.co/500x400/1a1a1a/e8ff00?text=No+Image';
 
@@ -17,17 +18,37 @@ export default function ProductDetailPage({ onCartUpdate }) {
   const [msg, setMsg]         = useState('');
   const [loading, setLoading] = useState(true);
 
+  const [recommendations, setRecommendations] = useState([]);
+
   useEffect(() => {
+    setLoading(true);
     API.get(`/products/${id}`)
       .then(r => setProduct(r.data))
       .catch(() => navigate('/'))
       .finally(() => setLoading(false));
+
+    // Fetch co-occurrence recommendations
+    API.get(`/products/${id}/recommendations`)
+      .then(r => setRecommendations(r.data))
+      .catch(() => {});
   }, [id, navigate]);
 
   async function handleAddToCart() {
     if (!user) { navigate('/login'); return; }
     try {
       await API.post('/cart/add', { product_id: product.product_id, quantity: qty });
+      setMsg('Added to cart! 🛒');
+      onCartUpdate && onCartUpdate();
+      setTimeout(() => setMsg(''), 2500);
+    } catch (err) {
+      setMsg(err.response?.data?.error || 'Failed to add');
+    }
+  }
+
+  async function handleRecommendationAddToCart(product_id) {
+    if (!user) { navigate('/login'); return; }
+    try {
+      await API.post('/cart/add', { product_id, quantity: 1 });
       setMsg('Added to cart! 🛒');
       onCartUpdate && onCartUpdate();
       setTimeout(() => setMsg(''), 2500);
@@ -110,6 +131,25 @@ export default function ProductDetailPage({ onCartUpdate }) {
             )}
           </div>
         </div>
+
+        {/* ── Recommendations Section ── */}
+        {!loading && recommendations.length > 0 && (
+          <div style={{ marginTop: 56 }}>
+            <h2 className="section-title" style={{ marginBottom: 24, fontSize: '28px', borderBottom: '1px solid var(--border)', paddingBottom: '12px' }}>
+              Customers Who Bought This Also Bought
+            </h2>
+            <div className="product-grid">
+              {recommendations.map(p => (
+                <ProductCard
+                  key={p.product_id}
+                  product={p}
+                  onAddToCart={user?.role !== 'admin' ? () => handleRecommendationAddToCart(p.product_id) : null}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );

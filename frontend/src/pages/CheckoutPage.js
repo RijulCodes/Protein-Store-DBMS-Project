@@ -11,6 +11,7 @@ export default function CheckoutPage({ onCartUpdate }) {
   const [card, setCard] = useState({
     number: '', name: '', expiry: '', cvv: ''
   });
+  const [showModal, setShowModal] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -31,12 +32,17 @@ export default function CheckoutPage({ onCartUpdate }) {
       setError('Please fill in all payment details'); return;
     }
     if (card.number.replace(/\s/g, '').length !== 16) {
-      setError('Invalid card number'); return;
+      setError('Invalid card number. Must be 16 digits.'); return;
     }
     setError('');
+    setShowModal(true);
+  }
+
+  async function handleConfirmPayment() {
+    setShowModal(false);
     setPlacing(true);
     try {
-      const { data } = await API.post('/orders/checkout', { payment_method: 'card' });
+      const { data } = await API.post('/orders/checkout', { payment_method: 'mock_card' });
       onCartUpdate && onCartUpdate();
       navigate('/orders', { state: { newOrder: data.order_id } });
     } catch (err) {
@@ -148,6 +154,52 @@ export default function CheckoutPage({ onCartUpdate }) {
             </div>
           </div>
         </form>
+        {/* ── Demo Payment Modal Overlay ── */}
+        {showModal && (
+          <div style={{
+            position: 'fixed', top: 0, left: 0, width: '100%', height: '100%',
+            background: 'rgba(0,0,0,0.85)', display: 'flex', alignItems: 'center',
+            justifyContent: 'center', zIndex: 9999, backdropFilter: 'blur(8px)'
+          }}>
+            <div className="card" style={{
+              maxWidth: 440, width: '90%', textAlign: 'center', padding: '32px 24px',
+              border: '1px solid var(--accent)', boxShadow: '0 8px 32px rgba(232,255,0,0.15)'
+            }}>
+              <div style={{ fontSize: 48, marginBottom: 12 }}>⚡</div>
+              <h2 className="section-title" style={{ color: 'var(--accent)', fontSize: '24px', marginBottom: 12 }}>
+                DEMO PAYMENT PORTAL
+              </h2>
+              
+              <div style={{ background: 'rgba(255, 61, 61, 0.15)', border: '1px solid var(--danger)', padding: 12, borderRadius: 8, fontSize: 13, color: '#ff8a8a', marginBottom: 20, lineHeight: 1.5 }}>
+                ⚠️ <strong>IMPORTANT SECURITY NOTICE:</strong> This is a simulated checkout flow for test purposes only.
+                <br /><strong>DO NOT enter real credit card numbers.</strong>
+              </div>
+
+              <p style={{ fontSize: 14, color: 'var(--muted)', marginBottom: 24, lineHeight: 1.6 }}>
+                You are about to authorize a mock transaction of <strong>₹{total.toLocaleString('en-IN')}</strong> using a dummy test profile.
+              </p>
+
+              <div style={{ display: 'flex', flexDirection: 'column', gap: 10 }}>
+                <button
+                  type="button"
+                  className="btn btn-primary"
+                  onClick={handleConfirmPayment}
+                  style={{ width: '100%', padding: '12px' }}
+                >
+                  Confirm Demo Payment (₹{total.toLocaleString('en-IN')})
+                </button>
+                <button
+                  type="button"
+                  className="btn btn-ghost"
+                  onClick={() => setShowModal(false)}
+                  style={{ width: '100%', padding: '12px' }}
+                >
+                  Cancel & Edit Details
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

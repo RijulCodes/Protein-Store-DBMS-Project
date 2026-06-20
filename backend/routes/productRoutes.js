@@ -7,6 +7,7 @@ const { verifyToken, adminOnly } = require('../middleware/auth');
 router.get('/',             pc.getAll);          // public
 router.get('/categories',   pc.getCategories);   // public
 router.get('/:id',          pc.getOne);          // public
+router.get('/:id/recommendations', pc.getRecommendations); // public
 router.post('/',            verifyToken, adminOnly, pc.create);
 router.put('/:id',          verifyToken, adminOnly, pc.update);
 router.delete('/:id',       verifyToken, adminOnly, pc.remove);

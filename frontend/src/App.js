@@ -5,6 +5,7 @@ import { AuthProvider, useAuth } from './context/AuthContext';
 import API from './api';
 
 import Navbar          from './components/Navbar';
+import ChatbotWidget    from './components/ChatbotWidget';
 import AuthPage        from './pages/AuthPage';
 import ProductsPage    from './pages/ProductsPage';
 import ProductDetailPage from './pages/ProductDetailPage';
@@ -12,6 +13,7 @@ import CartPage        from './pages/CartPage';
 import CheckoutPage    from './pages/CheckoutPage';
 import OrdersPage      from './pages/OrdersPage';
 import AdminPage       from './pages/AdminPage';
+import MacroAdvisorPage from './pages/MacroAdvisorPage';
 
 // ── Route guards ──────────────────────────────────────────────
 function PrivateRoute({ children }) {
@@ -50,6 +52,7 @@ function AppInner() {
         <Route path="/products/:id" element={<ProductDetailPage onCartUpdate={refreshCartCount} />} />
         <Route path="/login"     element={<AuthPage mode="login" />} />
         <Route path="/register"  element={<AuthPage mode="register" />} />
+        <Route path="/ai-advisor" element={<MacroAdvisorPage />} />
 
         {/* User-only */}
         <Route path="/cart"     element={<PrivateRoute><CartPage     onCartUpdate={refreshCartCount} /></PrivateRoute>} />
@@ -62,6 +65,7 @@ function AppInner() {
         {/* Fallback */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
+      <ChatbotWidget />
     </>
   );
 }

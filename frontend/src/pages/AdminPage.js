@@ -19,6 +19,53 @@ export default function AdminPage() {
   const [msg,          setMsg]          = useState('');
   const [error,        setError]        = useState('');
 
+  // AI Description & Console states
+  const [aiDescLoading, setAiDescLoading] = useState(false);
+  const [aiConsoleQuery, setAiConsoleQuery] = useState('');
+  const [aiConsoleLoading, setAiConsoleLoading] = useState(false);
+  const [aiConsoleResult, setAiConsoleResult] = useState(null);
+
+  async function handleGenerateAiDescription() {
+    if (!form.name || !form.category) return;
+    setAiDescLoading(true);
+    setMsg('');
+    setError('');
+    try {
+      const { data } = await API.post('/ai/description', {
+        name: form.name,
+        category: form.category,
+        specs: form.description
+      });
+      setForm(f => ({ ...f, description: data.description }));
+      setMsg('AI Description generated! ✓');
+    } catch (err) {
+      setError('Failed to generate description: ' + (err.response?.data?.error || err.message));
+    } finally {
+      setAiDescLoading(false);
+    }
+  }
+
+  async function handleAiConsoleSubmit() {
+    if (!aiConsoleQuery.trim() || aiConsoleLoading) return;
+    setAiConsoleLoading(true);
+    setError('');
+    setMsg('');
+    setAiConsoleResult(null);
+
+    try {
+      const { data } = await API.post('/ai/admin-query', { query: aiConsoleQuery });
+      setAiConsoleResult(data);
+      setMsg('Query executed successfully! ✓');
+    } catch (err) {
+      setError(err.response?.data?.error || 'AI Query execution failed.');
+      if (err.response?.data?.generatedSql) {
+        setAiConsoleResult({ query: err.response.data.generatedSql, rows: [] });
+      }
+    } finally {
+      setAiConsoleLoading(false);
+    }
+  }
+
   useEffect(() => { loadProducts(); }, []);
 
   async function loadProducts() {
@@ -148,6 +195,7 @@ export default function AdminPage() {
     { id: 'revenue',    label: '📊 Revenue' },
     { id: 'stock',      label: '🔴 Stock Status' },      // queries vw_product_stock_status VIEW
     { id: 'catrevenue', label: '🗄️ Category Report' },  // calls stored procedure with cursor
+    { id: 'aiconsole',  label: '🤖 AI Console' },        // natural language SQL query
   ];
 
   return (
@@ -189,7 +237,18 @@ export default function AdminPage() {
                   </div>
                 </div>
                 <div className="form-group">
-                  <label className="form-label">Description</label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 6 }}>
+                    <label className="form-label" style={{ margin: 0 }}>Description</label>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={handleGenerateAiDescription}
+                      disabled={aiDescLoading || !form.name || !form.category}
+                      style={{ padding: '2px 8px', fontSize: '11px', display: 'flex', alignItems: 'center', gap: '4px' }}
+                    >
+                      {aiDescLoading ? 'Drafting...' : '✨ Generate with AI'}
+                    </button>
+                  </div>
                   <textarea name="description" value={form.description} onChange={handleChange} rows={2} placeholder="Short product description…" />
                 </div>
                 <div className="form-group">
@@ -440,6 +499,83 @@ export default function AdminPage() {
                     ))}
                   </tbody>
                 </table>
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* ── AI ANALYTICS CONSOLE ── */}
+        {tab === 'aiconsole' && (
+          <div className="card">
+            <div className="section-title" style={{ marginBottom: 4 }}>🤖 AI ANALYTICS CONSOLE</div>
+            <p style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 20 }}>
+              Ask questions about sales, revenue, products, and payments in natural language. The assistant will translate it to a secure SQL query and fetch the results.
+            </p>
+            {error && <div className="alert alert-error" style={{ marginBottom: 16 }}>{error}</div>}
+            {msg && <div className="alert alert-success" style={{ marginBottom: 16 }}>{msg}</div>}
+
+            <div style={{ display: 'flex', gap: 12, marginBottom: 24 }}>
+               <input
+                 placeholder="e.g. 'What are our top 3 best-selling products by quantity?' or 'Show total revenue by payment method'..."
+                 value={aiConsoleQuery}
+                 onChange={e => setAiConsoleQuery(e.target.value)}
+                 onKeyDown={e => e.key === 'Enter' && handleAiConsoleSubmit()}
+                 disabled={aiConsoleLoading}
+               />
+               <button
+                 className="btn btn-primary"
+                 onClick={handleAiConsoleSubmit}
+                 disabled={aiConsoleLoading || !aiConsoleQuery.trim()}
+                 style={{ whiteSpace: 'nowrap', padding: '10px 24px' }}
+               >
+                 {aiConsoleLoading ? 'Querying...' : 'Ask AI'}
+               </button>
+            </div>
+
+            {aiConsoleLoading && <div className="spinner" />}
+
+            {aiConsoleResult && (
+              <div style={{ marginTop: 24 }}>
+                <div style={{ background: 'var(--surface2)', padding: '14px', borderRadius: 'var(--radius)', border: '1px solid var(--border)', marginBottom: 20 }}>
+                  <div style={{ fontSize: 11, textTransform: 'uppercase', color: 'var(--accent)', fontWeight: 700, marginBottom: 6 }}>Generated SQL Query:</div>
+                  <code style={{ fontSize: 13, fontFamily: 'monospace', color: '#e0e0e0', wordBreak: 'break-all', display: 'block', whiteSpace: 'pre-wrap' }}>
+                    {aiConsoleResult.query}
+                  </code>
+                </div>
+
+                <div className="section-title" style={{ fontSize: 18, marginBottom: 12 }}>Query Results ({aiConsoleResult.rows.length} rows)</div>
+                {aiConsoleResult.rows.length === 0 ? (
+                  <div style={{ color: 'var(--muted)', fontSize: 14 }}>Query succeeded but returned no rows.</div>
+                ) : (
+                  <div className="table-wrap">
+                    <table>
+                      <thead>
+                        <tr>
+                          {Object.keys(aiConsoleResult.rows[0]).map(key => (
+                            <th key={key}>{key}</th>
+                          ))}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {aiConsoleResult.rows.map((row, rIdx) => (
+                          <tr key={rIdx}>
+                            {Object.values(row).map((val, cIdx) => (
+                              <td key={cIdx}>
+                                {val === null ? (
+                                  <span style={{ color: 'var(--muted)', fontStyle: 'italic' }}>NULL</span>
+                                ) : typeof val === 'object' ? (
+                                  JSON.stringify(val)
+                                ) : (
+                                  String(val)
+                                )}
+                              </td>
+                            ))}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             )}
           </div>

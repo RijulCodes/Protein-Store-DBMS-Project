@@ -14,5 +14,26 @@ const pool = mysql.createPool({
   queueLimit: 0,
 });
 
-// Export promise-based interface for async/await usage
-module.exports = pool.promise();
+const promisePool = pool.promise();
+
+// Create reporter pool for SELECT-only analytics (Phase 2c)
+let reporterPool;
+if (process.env.REPORTER_DB_USER) {
+  reporterPool = mysql.createPool({
+    host:     process.env.DB_HOST             || 'localhost',
+    user:     process.env.REPORTER_DB_USER,
+    password: process.env.REPORTER_DB_PASSWORD,
+    database: process.env.DB_NAME             || 'protein_store',
+    waitForConnections: true,
+    connectionLimit: 5,
+    queueLimit: 0,
+  }).promise();
+} else {
+  // Fallback to main pool if not configured, app-level safety checks still apply
+  reporterPool = promisePool;
+}
+
+promisePool.reporterDb = reporterPool;
+
+// Export promise-based interface
+module.exports = promisePool;
