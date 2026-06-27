@@ -147,7 +147,7 @@ Output ONLY valid JSON. Do not include markdown block ticks (e.g. \`\`\`json) or
 
     const result = await model.generateContent(prompt);
     let text = result.response.text().trim();
-    
+
     // Clean markdown wraps if the model ignores instructions
     if (text.startsWith('```')) {
       text = text.replace(/```json/g, '').replace(/```/g, '').trim();
@@ -322,12 +322,12 @@ Rules:
 
     // Safety Checks (Application Layer Guardrails)
     const cleanSql = generatedSql.toLowerCase();
-    
+
     // Rule A: Must start with SELECT
     if (!cleanSql.startsWith('select')) {
-      return res.status(400).json({ 
+      return res.status(400).json({
         error: 'Security block: Generated query is not a read-only SELECT statement.',
-        generatedSql 
+        generatedSql
       });
     }
 
@@ -335,9 +335,9 @@ Rules:
     const forbiddenKeywords = ['insert', 'update', 'delete', 'drop', 'alter', 'create', 'truncate', 'grant', 'replace', 'rename'];
     for (const kw of forbiddenKeywords) {
       if (cleanSql.includes(kw)) {
-        return res.status(400).json({ 
+        return res.status(400).json({
           error: `Security block: Generated query contains forbidden keyword: "${kw}".`,
-          generatedSql 
+          generatedSql
         });
       }
     }
@@ -356,7 +356,7 @@ Rules:
       rows
     });
   } catch (err) {
-    res.status(500).json({ 
+    res.status(500).json({
       error: 'Query execution failed: ' + err.message,
       query: generatedSql
     });

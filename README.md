@@ -4,46 +4,62 @@ A database-driven protein store management system built as a final project for m
 
 ## Features
 
-* Product listing
-* Order management
-* Admin dashboard
-* Order history
-* Sales statistics
+* **Product Catalog & Management**: Full CRUD operations for supplements with pagination, stock control, and image upload.
+* **AI-Powered Product Descriptions**: Auto-generates engaging, SEO-friendly descriptions using Gemini 2.5 Flash.
+* **Smart Search Parser**: Translates natural language shopping queries (e.g., "chocolate pre-workout under ₹2000") into structured database filter parameters.
+* **Personalized Diet & Macro Advisor**: Computes user BMR/TDEE and recommends matching protein/supplement packages directly from active inventory.
+* **Customer Support Chatbot**: Real-time help for supplemental FAQs and order tracking integration.
+* **Secure AI SQL Analytics Console**: Translates natural language questions to read-only MySQL SELECT queries with application-level and db-level permission guardrails.
+* **Order & Payments System**: Complete checkout flow, cart management, and payment validation.
+* **Admin Dashboard**: Live sales charts, inventory status, and database insight panel.
 
 ## Tech Stack
 
-* MySQL
-* Node.js / Express (if applicable)
-* HTML/CSS/JS
+* **Frontend**: React (React Router, Axios, CSS Modules)
+* **Backend**: Node.js & Express (RESTful APIs)
+* **Database**: MySQL (with views, pools, and custom triggers)
+* **AI Engine**: Google Gemini API (`gemini-2.5-flash` via `@google/generative-ai`)
+* **Security & Guardrails**: JWT authentication, custom SQL sanitizer/limiter, role-based database permissions
 
 ## User View Screenshots
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/7ec5a06b-5c7e-46c7-a951-b830015e0d8b" width="100%"/></td>
-    <td><img src="https://github.com/user-attachments/assets/ed9e8b71-baac-4413-89b5-7910f03104bb" width="100%"/></td>
+    <td><img src="screenshots/userview/Screenshot%202026-06-27%20201834.png" width="100%"/></td>
+    <td><img src="screenshots/userview/Screenshot%202026-06-27%20201924.png" width="100%"/></td>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/989acfbe-77d4-4eee-9d3a-a65286359631" width="100%"/></td>
-    <td><img src="https://github.com/user-attachments/assets/a8bbb475-043e-4127-880e-564fcc8d43f9" width="100%"/></td>
+    <td><img src="screenshots/userview/Screenshot%202026-06-27%20201929.png" width="100%"/></td>
+    <td><img src="screenshots/userview/Screenshot%202026-06-27%20201935.png" width="100%"/></td>
   </tr>
-  
+  <tr>
+    <td><img src="screenshots/userview/Screenshot%202026-06-27%20201959.png" width="100%"/></td>
+    <td><img src="screenshots/userview/Screenshot%202026-06-27%20202011.png" width="100%"/></td>
+  </tr>
 </table>
 
 
 ## Admin View Screenshots
 <table>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/12c6f88b-03e3-4dcf-b8d3-e424fa3b698e" width="100%"/></td>
-    <td><img src="https://github.com/user-attachments/assets/86260086-3489-4235-acb7-c4adbdcce923" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201344.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201441.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201521.png" width="100%"/></td>
   </tr>
   <tr>
-    <td><img src="https://github.com/user-attachments/assets/add1946d-64b6-47cb-9550-16f49b669b44" width="100%"/></td>
-    <td><img src="https://github.com/user-attachments/assets/9531db7d-6d6b-45d1-bc6a-8745f32af693" width="100%"/></td>
-/>
-
-    
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201614.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201628.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201801.png" width="100%"/></td>
   </tr>
-  
+  <tr>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20201808.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20202043.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20202049.png" width="100%"/></td>
+  </tr>
+  <tr>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20202106.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20202115.png" width="100%"/></td>
+    <td><img src="screenshots/adminview/Screenshot%202026-06-27%20202207.png" width="100%"/></td>
+  </tr>
 </table>
 
 ## Database Entity-Relationship (ER) Diagram
@@ -189,4 +205,3 @@ npm run test
 * Rijul Yadav
 * Nitya Mehrotra
 * Divit Khandelwal
-
